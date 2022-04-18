@@ -51,8 +51,8 @@ export default class PipelineConstruct extends Construct{
     .region(region)
     .addOns()
     .teams(
-      new teams.TeamAndrew(scope, process.env.CDK_DEFAUL_ACCOUNT!, 'jeong', teamManifestDirList[0]), 
-      new teams.TeamYoung(scope, process.env.CDK_DEFAUL_ACCOUNT!, 'jeong', teamManifestDirList[1]),
+      new teams.TeamAndrew(scope, account, 'jeong', teamManifestDirList[0]), 
+      new teams.TeamYoung(scope, account, 'jeong', teamManifestDirList[1]),
     );
 
     // const repoUrl = 'https://github.com/aws-samples/eks-blueprints-workloads';
