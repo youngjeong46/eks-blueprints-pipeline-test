@@ -96,7 +96,7 @@ export default class PipelineConstruct extends Construct{
         id: "envs",
         stages: [
           { id: "dev", stackBuilder: blueprint.clone('eu-central-1')},
-          { id: "test", stackBuilder: blueprint.clone('us-west-1')},
+          { id: "test", stackBuilder: blueprint.clone('eu-west-1')},
         ]
       })
       .build(scope, id+'-stack', props);
