@@ -95,7 +95,6 @@ export default class PipelineConstruct extends Construct{
       .wave({
         id: "envs",
         stages: [
-          { id: "dev", stackBuilder: blueprint.clone('eu-central-1')},
           { id: "test", stackBuilder: blueprint.clone('eu-west-1')},
         ]
       })
