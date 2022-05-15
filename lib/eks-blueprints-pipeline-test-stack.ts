@@ -18,6 +18,7 @@ export default class PipelineConstruct extends Construct{
 
     const account = props?.env?.account!;
     const region = props?.env?.account!;
+    const prodAccount = this.node.tryGetContext("prod-account");
 
     // Customized Cluster Provider
     const clusterProvider = new blueprints.GenericClusterProvider({
@@ -25,9 +26,6 @@ export default class PipelineConstruct extends Construct{
       managedNodeGroups: [
         {
           id: "mng-1",
-          minSize: 1,
-          maxSize: 5,
-          desiredSize: 2,
           amiType: eks.NodegroupAmiType.AL2_X86_64,
           instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
           nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
@@ -51,7 +49,8 @@ export default class PipelineConstruct extends Construct{
     .region(region)
     .addOns()
     .teams(
-      new teams.TeamAndrew(scope, account, 'jeong', teamManifestDirList[0]), 
+      new teams.TeamPlatform(account),
+      new teams.TeamAndrew(scope, account, 'park', teamManifestDirList[0]),
       new teams.TeamYoung(scope, account, 'jeong', teamManifestDirList[1]),
     );
 
@@ -82,7 +81,7 @@ export default class PipelineConstruct extends Construct{
     //     path: 'envs/prod',
     //   }
     // });
-    
+
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
       .name("eks-blueprints-pipeline-test")
@@ -93,9 +92,15 @@ export default class PipelineConstruct extends Construct{
           targetRevision: 'main'
       })
       .wave({
-        id: "envs",
+        id: 'dev',
         stages: [
-          { id: "test", stackBuilder: blueprint.clone('eu-west-1')},
+          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2')},
+        ]
+      })
+      .wave({
+        id: "prod",
+        stages: [
+          { id: "west-1", stackBuilder: blueprint.clone('us-east-1')},
         ]
       })
       .build(scope, id+'-stack', props);
