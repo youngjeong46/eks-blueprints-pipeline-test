@@ -47,14 +47,14 @@ export default class PipelineConstruct extends Construct{
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
     .account(account)
-    .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
+    // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .clusterProvider(clusterProvider)
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
-      new blueprints.addons.ExternalDnsAddOn({
-        hostedZoneResources: [hostedZoneName]
-      })
+      // new blueprints.addons.ExternalDnsAddOn({
+      //   hostedZoneResources: [hostedZoneName]
+      // })
     )
     .teams(
       new teams.TeamPlatform(account),
