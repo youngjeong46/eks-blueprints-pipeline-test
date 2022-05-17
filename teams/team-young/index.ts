@@ -9,12 +9,12 @@ export class TeamYoung extends ApplicationTeam {
             //user: [new ArnPrincipal(`arn:aws:iam::${account}:user/${username}`)],
             userRoleArn: `arn:aws:iam::${account}:role/team-${teamname}-role`,
             teamManifestDir: teamManifestDir,
-            namespaceHardLimits: {
-                'requests.cpu': '10',
-                'requests.memory': '10Gi',
-                'limits.cpu': '20',
-                'limits.memory': '20Gi'
-            }
+            // namespaceHardLimits: {
+            //     'requests.cpu': '10',
+            //     'requests.memory': '10Gi',
+            //     'limits.cpu': '20',
+            //     'limits.memory': '20Gi'
+            // }
         });
     }
 }
