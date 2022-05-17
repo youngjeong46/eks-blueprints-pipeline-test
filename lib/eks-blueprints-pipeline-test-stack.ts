@@ -55,6 +55,27 @@ export default class PipelineConstruct extends Construct{
       new teams.TeamYoung(this, account, 'young', teamManifestDirList[1]),
     );
 
+    const repoUrl = 'https://github.com/youngjeong46/eks-blueprints-workloads-test';
+
+    const bootstrapRepo: blueprints.ApplicationRepository = {
+      repoUrl,
+      targetRevision: 'main',
+    }
+
+    const devBootstrapArgo = new blueprints.ArgoCDAddOn({
+      bootstrapRepo: {
+        ...bootstrapRepo,
+        path: 'envs/dev',
+      }
+    });
+
+    const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
+      bootstrapRepo: {
+        ...bootstrapRepo,
+        path: 'envs/prod',
+      }
+    });
+
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
       .name("eks-blueprints-pipeline-test")
@@ -67,13 +88,13 @@ export default class PipelineConstruct extends Construct{
       .wave({
         id: 'dev',
         stages: [
-          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2')},
+          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2').addOns(devBootstrapArgo)},
         ]
       })
       .wave({
         id: "prod",
         stages: [
-          { id: "west-1", stackBuilder: blueprint.clone('us-east-1')},
+          { id: "west-1", stackBuilder: blueprint.clone('us-east-1').addOns(prodBootstrapArgo)},
         ]
       })
       .build(scope, id+'-stack', props);

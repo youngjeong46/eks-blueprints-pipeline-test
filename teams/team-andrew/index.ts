@@ -5,7 +5,7 @@ import { ApplicationTeam } from '@aws-quickstart/eks-blueprints';
 export class TeamAndrew extends ApplicationTeam {
     constructor(scope: Construct, account: string, teamname: string, teamManifestDir: string) {
         super({
-            name: "andrew",
+            name: teamname,
             //user: [new ArnPrincipal(`arn:aws:iam::${account}:user/${username}`)],
             userRoleArn: `arn:aws:iam::${account}:role/team-${teamname}-role`,
             teamManifestDir: teamManifestDir
