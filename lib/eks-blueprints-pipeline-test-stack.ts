@@ -49,7 +49,11 @@ export default class PipelineConstruct extends Construct{
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns()
-    .teams();
+    .teams(
+      new teams.TeamPlatform(account),
+      new teams.TeamAndrew(this, account, 'andrew', teamManifestDirList[0]),
+      new teams.TeamYoung(this, account, 'young', teamManifestDirList[1]),
+    );
 
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
