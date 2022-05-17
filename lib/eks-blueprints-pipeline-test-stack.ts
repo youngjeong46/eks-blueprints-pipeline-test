@@ -51,8 +51,8 @@ export default class PipelineConstruct extends Construct{
     .addOns()
     .teams(
       new teams.TeamPlatform(account),
-      new teams.TeamAndrew(this, account, 'andrew', teamManifestDirList[0]),
-      new teams.TeamYoung(this, account, 'young', teamManifestDirList[1]),
+      new teams.TeamAndrew(this, account, 'andrew'),
+      new teams.TeamYoung(this, account, 'young'),
     );
 
     const repoUrl = 'https://github.com/youngjeong46/eks-blueprints-workloads-test';
