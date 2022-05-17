@@ -13,13 +13,6 @@
     "eu-west-1b",
     "eu-west-1c"
   ],
-  "eks.default.min-size": 1,
-  "eks.default.max-size": 5,
-  "eks.default.desired-size": 3,
-  "eks.default.instance-type": "m5.xlarge",
-  "eks.default.private-cluster": false,
-  "prod-account": "181460066119",
-  "control-plane-log-types": "api",
   "availability-zones:account=181460066119:region=eu-west-1": [
     "eu-west-1a",
     "eu-west-1b",
@@ -43,5 +36,13 @@
     "us-east-1d",
     "us-east-1e",
     "us-east-1f"
-  ]
+  ],
+  "eks.default.min-size": 1,
+  "eks.default.max-size": 5,
+  "eks.default.desired-size": 3,
+  "eks.default.instance-type": "m5.xlarge",
+  "eks.default.private-cluster": false,
+  "prod-account": "181460066119",
+  "control-plane-log-types": "api",
+  "hosted-zone-name": "youngsjeong.com"
 }

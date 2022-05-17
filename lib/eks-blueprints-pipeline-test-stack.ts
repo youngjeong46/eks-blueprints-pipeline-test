@@ -20,6 +20,8 @@ export default class PipelineConstruct extends Construct{
     const region = props?.env?.account!;
     const prodAccount = this.node.tryGetContext("prod-account");
 
+    const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
+
     // Customized Cluster Provider
     const clusterProvider = new blueprints.GenericClusterProvider({
       version: eks.KubernetesVersion.V1_21,
@@ -45,14 +47,19 @@ export default class PipelineConstruct extends Construct{
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
     .account(account)
+    .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .clusterProvider(clusterProvider)
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
-    .addOns()
+    .addOns(
+      new blueprints.addons.ExternalDnsAddOn({
+        hostedZoneResources: [hostedZoneName]
+      })
+    )
     .teams(
       new teams.TeamPlatform(account),
-      new teams.TeamAndrew(this, account, 'andrew'),
-      new teams.TeamYoung(this, account, 'young'),
+      new teams.TeamAndrew(this, account, 'andrew', teamManifestDirList[0]),
+      new teams.TeamYoung(this, account, 'young', teamManifestDirList[1]),
     );
 
     const repoUrl = 'https://github.com/youngjeong46/eks-blueprints-workloads-test';
