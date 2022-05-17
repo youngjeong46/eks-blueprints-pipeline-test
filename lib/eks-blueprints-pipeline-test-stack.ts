@@ -47,40 +47,9 @@ export default class PipelineConstruct extends Construct{
     .account(account)
     .clusterProvider(clusterProvider)
     .region(region)
+    .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns()
-    .teams(
-      new teams.TeamPlatform(account),
-      new teams.TeamAndrew(scope, account, 'park', teamManifestDirList[0]),
-      new teams.TeamYoung(scope, account, 'jeong', teamManifestDirList[1]),
-    );
-
-    // const repoUrl = 'https://github.com/aws-samples/eks-blueprints-workloads';
-
-    // const bootstrapRepo: blueprints.ApplicationRepository = {
-    //   repoUrl,
-    //   targetRevision: 'demo',
-    // }
-
-    // const devBootstrapArgo = new blueprints.ArgoCDAddOn({
-    //   bootstrapRepo: {
-    //     ...bootstrapRepo,
-    //     path: 'envs/dev',
-    //   }
-    // });
-
-    // const testBootstrapArgo = new blueprints.ArgoCDAddOn({
-    //   bootstrapRepo: {
-    //     ...bootstrapRepo,
-    //     path: 'envs/test',
-    //   }
-    // });
-
-    // const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
-    //   bootstrapRepo: {
-    //     ...bootstrapRepo,
-    //     path: 'envs/prod',
-    //   }
-    // });
+    .teams();
 
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
@@ -88,7 +57,7 @@ export default class PipelineConstruct extends Construct{
       .owner("youngjeong46")
       .repository({
           repoUrl: 'eks-blueprints-pipeline-test',
-          credentialsSecretName: 'github-token',
+          credentialsSecretName: 'github-token', // Secrets Manager - predefined
           targetRevision: 'main'
       })
       .wave({

@@ -19,6 +19,7 @@
   "eks.default.instance-type": "m5.xlarge",
   "eks.default.private-cluster": false,
   "prod-account": "181460066119",
+  "control-plane-log-types": ["api","scheduler"],
   "availability-zones:account=181460066119:region=eu-west-1": [
     "eu-west-1a",
     "eu-west-1b",
