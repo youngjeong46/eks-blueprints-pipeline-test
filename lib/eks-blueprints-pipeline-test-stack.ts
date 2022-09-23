@@ -53,6 +53,7 @@ export default class PipelineConstruct extends Construct{
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
+      new blueprints.addons.AwsLoadBalancerControllerAddOn(),
       new blueprints.addons.ExternalDnsAddOn({
         hostedZoneResources: [hostedZoneName]
       }),
