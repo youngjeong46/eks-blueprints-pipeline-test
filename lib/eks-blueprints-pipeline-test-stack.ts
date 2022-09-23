@@ -95,6 +95,7 @@ export default class PipelineConstruct extends Construct{
     blueprints.CodePipelineStack.builder()
       .name("eks-blueprints-pipeline-test")
       .owner("youngjeong46")
+      .codeBuildPolicies(blueprints.DEFAULT_BUILD_POLICIES)
       .repository({
           repoUrl: 'eks-blueprints-pipeline-test',
           credentialsSecretName: 'github-token', // Secrets Manager - predefined
