@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 
 import PipelineConstruct from '../lib/eks-blueprints-pipeline-test-stack';

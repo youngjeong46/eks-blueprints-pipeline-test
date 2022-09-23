@@ -42,7 +42,14 @@
   "eks.default.desired-size": 3,
   "eks.default.instance-type": "m5.xlarge",
   "eks.default.private-cluster": false,
-  "prod-account": "181460066119",
   "control-plane-log-types": "api",
-  "hosted-zone-name": "youngsjeong.com"
+  "hosted-zone-name": "youngsjeong.com",
+  "hosted-zone:account=661554271967:domainName=youngsjeong.com:region=us-west-2": {
+    "Id": "/hostedzone/Z047595910FNJOF0W7C6R",
+    "Name": "youngsjeong.com."
+  },
+  "hosted-zone:account=661554271967:domainName=youngsjeong.com:region=us-east-1": {
+    "Id": "/hostedzone/Z047595910FNJOF0W7C6R",
+    "Name": "youngsjeong.com."
+  }
 }

@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import * as blueprints from '@aws-quickstart/eks-blueprints';
 
 import * as teams from '../teams';
+import { GlobalResources } from '@aws-quickstart/eks-blueprints';
 
 
 const youngManifestDir = './teams/team-young/manifests/';
@@ -18,7 +19,6 @@ export default class PipelineConstruct extends Construct{
 
     const account = props?.env?.account!;
     const region = props?.env?.account!;
-    const prodAccount = this.node.tryGetContext("prod-account");
 
     const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
 
@@ -48,12 +48,20 @@ export default class PipelineConstruct extends Construct{
     const blueprint = blueprints.EksBlueprint.builder()
     .account(account)
     .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
+    .resourceProvider(blueprints.GlobalResources.Certificate, new blueprints.CreateCertificateProvider('young-cert',`*.${hostedZoneName}`, hostedZoneName))
     .clusterProvider(clusterProvider)
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
       new blueprints.addons.ExternalDnsAddOn({
         hostedZoneResources: [hostedZoneName]
+      }),
+      new blueprints.addons.NginxAddOn({
+          internetFacing: true,
+          backendProtocol: 'tcp',
+          externalDnsHostname: hostedZoneName,
+          crossZoneEnabled: false,
+          certificateResourceName: GlobalResources.Certificate
       })
     )
     .teams(
