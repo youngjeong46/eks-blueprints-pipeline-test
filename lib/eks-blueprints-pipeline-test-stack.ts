@@ -30,9 +30,9 @@ export default class PipelineConstruct extends Construct{
         {
           id: "spot-1",
           instanceTypes: [
-            new ec2.InstanceType('t2.xlarge'),
-            new ec2.InstanceType('t3.xlarge'),
-            new ec2.InstanceType('t3.small'),
+            new ec2.InstanceType('t2.large'),
+            new ec2.InstanceType('t3.large'),
+            new ec2.InstanceType('m5.large'),
           ],
           nodeGroupCapacityType: eks.CapacityType.SPOT,
         }
