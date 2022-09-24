@@ -62,7 +62,10 @@ export default class PipelineConstruct extends Construct{
           backendProtocol: 'tcp',
           externalDnsHostname: hostedZoneName,
           crossZoneEnabled: false,
-          certificateResourceName: GlobalResources.Certificate
+          certificateResourceName: GlobalResources.Certificate,
+          values:{
+            "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+          }
       })
     )
     .teams(
