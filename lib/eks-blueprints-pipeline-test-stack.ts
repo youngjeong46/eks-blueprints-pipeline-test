@@ -109,7 +109,7 @@ export default class PipelineConstruct extends Construct{
             .addOns(
               new blueprints.addons.NginxAddOn({
                 internetFacing: true,
-                backendProtocol: 'tcp',
+                backendProtocol: 'http',
                 externalDnsHostname: hostedZoneName,
                 crossZoneEnabled: false,
                 certificateResourceName: GlobalResources.Certificate,
