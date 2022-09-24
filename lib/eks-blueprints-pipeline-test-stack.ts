@@ -104,6 +104,7 @@ export default class PipelineConstruct extends Construct{
             .addOns(devBootstrapArgo)
           },
           { id: "prod-1", stackBuilder: blueprint.clone('us-east-1')
+            .clusterProvider(prodClusterProvider)
             .addOns(
               new blueprints.addons.NginxAddOn({
                 internetFacing: true,
