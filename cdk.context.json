@@ -44,8 +44,6 @@
   "eks.default.private-cluster": false,
   "control-plane-log-types": "api",
   "hosted-zone-name": "youngsjeong.com",
-  "dev-hosted-zone-name": "dev.youngsjeong.com",
-  "prod-hosted-zone-name": "prod.youngsjeong.com",
   "hosted-zone:account=661554271967:domainName=youngsjeong.com:region=us-west-2": {
     "Id": "/hostedzone/Z047595910FNJOF0W7C6R",
     "Name": "youngsjeong.com."
