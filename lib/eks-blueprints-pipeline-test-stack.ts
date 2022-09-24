@@ -23,15 +23,9 @@ export default class PipelineConstruct extends Construct{
     const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
 
     // Customized Cluster Provider
-    const clusterProvider = new blueprints.GenericClusterProvider({
+    const devClusterProvider = new blueprints.GenericClusterProvider({
       version: eks.KubernetesVersion.V1_21,
       managedNodeGroups: [
-        {
-          id: "mng-1",
-          amiType: eks.NodegroupAmiType.AL2_X86_64,
-          instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
-          nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
-        },
         {
           id: "spot-1",
           instanceTypes: [
@@ -44,12 +38,19 @@ export default class PipelineConstruct extends Construct{
       ]
     });
 
+    const prodClusterProvider = new blueprints.MngClusterProvider({
+      id: "prod-nodegroup-1",
+      amiType: eks.NodegroupAmiType.AL2_X86_64,
+      instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
+      nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
+      version: eks.KubernetesVersion.V1_21
+    })
+
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
     .account(account)
     .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .resourceProvider(blueprints.GlobalResources.Certificate, new blueprints.CreateCertificateProvider('young-cert',`*.${hostedZoneName}`, hostedZoneName))
-    .clusterProvider(clusterProvider)
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
@@ -96,24 +97,24 @@ export default class PipelineConstruct extends Construct{
           targetRevision: 'main'
       })
       .wave({
-        id: 'dev',
+        id: 'envs',
         stages: [
-          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2').addOns(devBootstrapArgo)},
-        ]
-      })
-      .wave({
-        id: "prod",
-        stages: [
-          { id: "prod-1", stackBuilder: blueprint.clone('us-east-1').addOns(
-            new blueprints.addons.NginxAddOn({
-              internetFacing: true,
-              backendProtocol: 'tcp',
-              externalDnsHostname: hostedZoneName,
-              crossZoneEnabled: false,
-              certificateResourceName: GlobalResources.Certificate,
-            }),
-            prodBootstrapArgo
-          )},
+          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2')
+            .clusterProvider(devClusterProvider)
+            .addOns(devBootstrapArgo)
+          },
+          { id: "prod-1", stackBuilder: blueprint.clone('us-east-1')
+            .addOns(
+              new blueprints.addons.NginxAddOn({
+                internetFacing: true,
+                backendProtocol: 'tcp',
+                externalDnsHostname: hostedZoneName,
+                crossZoneEnabled: false,
+                certificateResourceName: GlobalResources.Certificate,
+              }),
+              prodBootstrapArgo
+            )
+          },
         ]
       })
       .build(scope, id+'-stack', props);
