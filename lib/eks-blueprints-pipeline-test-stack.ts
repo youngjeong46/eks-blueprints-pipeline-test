@@ -21,6 +21,7 @@ export default class PipelineConstruct extends Construct{
     const region = props?.env?.account!;
 
     const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
+    const prodDomain = blueprints.utils.valueFromContext(this, 'prod-domain','prod.example.com')
 
     // Customized Cluster Provider
     const devClusterProvider = new blueprints.GenericClusterProvider({
@@ -50,7 +51,6 @@ export default class PipelineConstruct extends Construct{
     const blueprint = blueprints.EksBlueprint.builder()
     .account(account)
     .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
-    .resourceProvider(blueprints.GlobalResources.Certificate, new blueprints.CreateCertificateProvider('young-cert',`*.${hostedZoneName}`, hostedZoneName))
     .region(region)
     .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
@@ -104,6 +104,7 @@ export default class PipelineConstruct extends Construct{
             .addOns(devBootstrapArgo)
           },
           { id: "prod-1", stackBuilder: blueprint.clone('us-east-1')
+            .resourceProvider(blueprints.GlobalResources.Certificate, new blueprints.CreateCertificateProvider('prod-cert',`*.${prodDomain}`, hostedZoneName))
             .clusterProvider(prodClusterProvider)
             .addOns(
               new blueprints.addons.NginxAddOn({
