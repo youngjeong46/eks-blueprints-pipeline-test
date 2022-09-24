@@ -28,7 +28,7 @@ export default class PipelineConstruct extends Construct{
       version: eks.KubernetesVersion.V1_21,
       managedNodeGroups: [
         {
-          id: "spot-1",
+          id: "spot-ng",
           instanceTypes: [
             new ec2.InstanceType('t2.large'),
             new ec2.InstanceType('t3.large'),
