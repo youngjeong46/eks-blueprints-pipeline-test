@@ -21,6 +21,8 @@ export default class PipelineConstruct extends Construct{
     const region = props?.env?.account!;
 
     const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
+    const devHostedZoneName = blueprints.utils.valueFromContext(this, "dev-hosted-zone-name", "dev.example.com");
+    const prodHostedZoneName = blueprints.utils.valueFromContext(this, "prod-hosted-zone-name", "prod.example.com");
 
     // Customized Cluster Provider
     const clusterProvider = new blueprints.GenericClusterProvider({
@@ -57,16 +59,6 @@ export default class PipelineConstruct extends Construct{
       new blueprints.addons.ExternalDnsAddOn({
         hostedZoneResources: [hostedZoneName]
       }),
-      new blueprints.addons.NginxAddOn({
-          internetFacing: true,
-          backendProtocol: 'tcp',
-          externalDnsHostname: hostedZoneName,
-          crossZoneEnabled: false,
-          certificateResourceName: GlobalResources.Certificate,
-          values:{
-            "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
-          }
-      })
     )
     .teams(
       new teams.TeamPlatform(account),
@@ -108,13 +100,31 @@ export default class PipelineConstruct extends Construct{
       .wave({
         id: 'dev',
         stages: [
-          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2').addOns(devBootstrapArgo)},
+          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2').addOns(
+            new blueprints.addons.NginxAddOn({
+              internetFacing: true,
+              backendProtocol: 'tcp',
+              externalDnsHostname: devHostedZoneName,
+              crossZoneEnabled: false,
+              certificateResourceName: GlobalResources.Certificate,
+            }),
+            devBootstrapArgo
+          )},
         ]
       })
       .wave({
         id: "prod",
         stages: [
-          { id: "west-1", stackBuilder: blueprint.clone('us-east-1').addOns(prodBootstrapArgo)},
+          { id: "west-1", stackBuilder: blueprint.clone('us-east-1').addOns(
+            new blueprints.addons.NginxAddOn({
+              internetFacing: true,
+              backendProtocol: 'tcp',
+              externalDnsHostname: prodHostedZoneName,
+              crossZoneEnabled: false,
+              certificateResourceName: GlobalResources.Certificate,
+            }),
+            prodBootstrapArgo
+          )},
         ]
       })
       .build(scope, id+'-stack', props);
