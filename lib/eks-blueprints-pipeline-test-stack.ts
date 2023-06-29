@@ -25,7 +25,7 @@ export default class PipelineConstruct extends Construct{
 
     // Customized Cluster Provider
     const devClusterProvider = new blueprints.GenericClusterProvider({
-      version: eks.KubernetesVersion.V1_21,
+      version: eks.KubernetesVersion.V1_26,
       managedNodeGroups: [
         {
           id: "spot-ng",
@@ -45,7 +45,7 @@ export default class PipelineConstruct extends Construct{
       amiType: eks.NodegroupAmiType.AL2_X86_64,
       instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
       nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
-      version: eks.KubernetesVersion.V1_21
+      version: eks.KubernetesVersion.V1_26
     })
 
     // Blueprint definition
