@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import * as blueprints from '@aws-quickstart/eks-blueprints';
 
 import * as teams from '../teams';
-import { GlobalResources } from '@aws-quickstart/eks-blueprints';
+// import { GlobalResources } from '@aws-quickstart/eks-blueprints';
 
 
 const youngManifestDir = './teams/team-young/manifests/';
@@ -20,44 +20,31 @@ export default class PipelineConstruct extends Construct{
     const account = props?.env?.account!;
     const region = props?.env?.account!;
 
-    const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
-    const prodDomain = blueprints.utils.valueFromContext(this, 'prod-domain','prod.example.com')
+    // const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
+    // const prodDomain = blueprints.utils.valueFromContext(this, 'prod-domain','prod.example.com')
 
-    // Customized Cluster Provider
-    const devClusterProvider = new blueprints.GenericClusterProvider({
-      version: eks.KubernetesVersion.V1_26,
-      managedNodeGroups: [
-        {
-          id: "spot-ng",
-          instanceTypes: [
-            new ec2.InstanceType('t2.large'),
-            new ec2.InstanceType('t3.large'),
-            new ec2.InstanceType('m5.large'),
-            new ec2.InstanceType('c4.large')
-          ],
-          nodeGroupCapacityType: eks.CapacityType.SPOT,
-        },
-      ]
-    });
-
-    const prodClusterProvider = new blueprints.MngClusterProvider({
+    const devClusterProvider = new blueprints.MngClusterProvider({
       id: "prod-nodegroup-1",
       amiType: eks.NodegroupAmiType.AL2_X86_64,
       instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
       nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
-      version: eks.KubernetesVersion.V1_26
+      version: eks.KubernetesVersion.V1_28,
+      minSize: 1,
+      maxSize: 2,
+      desiredSize: 2
     })
 
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
+    .version(eks.KubernetesVersion.V1_28)
     .account(account)
-    .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
+    // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .region(region)
-    .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
+    // .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
       new blueprints.addons.AwsLoadBalancerControllerAddOn(),
-      new blueprints.addons.ExternalDnsAddOn({
-        hostedZoneResources: [hostedZoneName]
+      new blueprints.addons.KarpenterAddOn({
+        version: 'v0.31.0'
       }),
     )
     .teams(
@@ -80,12 +67,12 @@ export default class PipelineConstruct extends Construct{
       }
     });
 
-    const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
-      bootstrapRepo: {
-        ...bootstrapRepo,
-        path: 'envs/prod',
-      }
-    });
+    // const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
+    //   bootstrapRepo: {
+    //     ...bootstrapRepo,
+    //     path: 'envs/prod',
+    //   }
+    // });
 
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
@@ -100,23 +87,9 @@ export default class PipelineConstruct extends Construct{
       .wave({
         id: 'envs',
         stages: [
-          { id: "dev-1", stackBuilder: blueprint.clone('us-west-2')
+          { id: "dev-1", stackBuilder: blueprint.clone('us-west-1')
             .clusterProvider(devClusterProvider)
             .addOns(devBootstrapArgo)
-          },
-          { id: "prod-1", stackBuilder: blueprint.clone('us-east-1')
-            .resourceProvider(blueprints.GlobalResources.Certificate, new blueprints.CreateCertificateProvider('prod-cert',`*.${prodDomain}`, hostedZoneName))
-            .clusterProvider(prodClusterProvider)
-            .addOns(
-              new blueprints.addons.NginxAddOn({
-                internetFacing: true,
-                backendProtocol: 'http',
-                externalDnsHostname: hostedZoneName,
-                crossZoneEnabled: false,
-                certificateResourceName: GlobalResources.Certificate,
-              }),
-              prodBootstrapArgo
-            )
           },
         ]
       })
