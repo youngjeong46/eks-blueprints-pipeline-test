@@ -32,7 +32,7 @@ export default class PipelineConstruct extends Construct{
       minSize: 1,
       maxSize: 2,
       desiredSize: 2
-    })
+    });
 
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
@@ -67,12 +67,12 @@ export default class PipelineConstruct extends Construct{
       }
     });
 
-    // const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
-    //   bootstrapRepo: {
-    //     ...bootstrapRepo,
-    //     path: 'envs/prod',
-    //   }
-    // });
+    const prodBootstrapArgo = new blueprints.ArgoCDAddOn({
+      bootstrapRepo: {
+        ...bootstrapRepo,
+        path: 'envs/prod',
+      }
+    });
 
     // Blueprints pipeline
     blueprints.CodePipelineStack.builder()
@@ -87,9 +87,13 @@ export default class PipelineConstruct extends Construct{
       .wave({
         id: 'envs',
         stages: [
-          { id: "dev-1", stackBuilder: blueprint.clone('us-west-1')
+          { id: "dev", stackBuilder: blueprint.clone('us-east-1')
             .clusterProvider(devClusterProvider)
             .addOns(devBootstrapArgo)
+          },
+          { id: "prod", stackBuilder: blueprint.clone('eu-west-1')
+            .clusterProvider(devClusterProvider)
+            .addOns(prodBootstrapArgo)
           },
         ]
       })
