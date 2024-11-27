@@ -46,7 +46,7 @@ export default class PipelineConstruct extends Construct{
         iam.ManagedPolicy.fromAwsManagedPolicyName("AWSCloudMapFullAccess"),
       ])
     )
-    .version(eks.KubernetesVersion.V1_28)
+    .version(eks.KubernetesVersion.V1_29)
     .account(account)
     // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .region(region)
