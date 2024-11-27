@@ -21,16 +21,6 @@ export default class PipelineConstruct extends Construct{
     const account = props?.env?.account!;
     const region = props?.env?.account!;
 
-    const nodeRole = new iam.Role(this, "blueprint-node-role-dev-prod-cluster", {
-      assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AWSCloudMapFullAccess"),
-      ]
-    });
-
     // const hostedZoneName = blueprints.utils.valueFromContext(this, "hosted-zone-name", "example.com");
     // const prodDomain = blueprints.utils.valueFromContext(this, 'prod-domain','prod.example.com')
 
@@ -40,7 +30,7 @@ export default class PipelineConstruct extends Construct{
       instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
       nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
       version: eks.KubernetesVersion.V1_28,
-      nodeRole: nodeRole,
+      nodeRole: blueprints.getNamedResource("dev-prod-node-role") as iam.Role,
       minSize: 1,
       maxSize: 2,
       desiredSize: 2
@@ -48,6 +38,14 @@ export default class PipelineConstruct extends Construct{
 
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
+    .resourceProvider("dev-prod-node-role", new blueprints.CreateRoleProvider("dev-prod-cluster-node-role", new iam.ServicePrincipal("ec2.amazonaws.com"),
+      [
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AWSCloudMapFullAccess"),
+      ])
+    )
     .version(eks.KubernetesVersion.V1_28)
     .account(account)
     // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
