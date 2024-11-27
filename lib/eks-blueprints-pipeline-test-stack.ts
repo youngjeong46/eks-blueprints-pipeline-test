@@ -56,9 +56,9 @@ export default class PipelineConstruct extends Construct{
       new blueprints.addons.KarpenterAddOn({
         version: 'v0.31.0'
       }),
-      new blueprints.addons.ExternalDnsAddOn({
-        hostedZoneResources: [],
-      })
+      // new blueprints.addons.ExternalDnsAddOn({
+      //   hostedZoneResources: [],
+      // })
     )
     .teams(
       new teams.TeamPlatform(account),
