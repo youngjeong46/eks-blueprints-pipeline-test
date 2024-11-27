@@ -29,7 +29,7 @@ export default class PipelineConstruct extends Construct{
       amiType: eks.NodegroupAmiType.AL2_X86_64,
       instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
       nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
-      version: eks.KubernetesVersion.V1_29,
+      version: eks.KubernetesVersion.V1_30,
       nodeRole: blueprints.getNamedResource("dev-prod-node-role") as iam.Role,
       minSize: 1,
       maxSize: 2,
@@ -46,16 +46,14 @@ export default class PipelineConstruct extends Construct{
         iam.ManagedPolicy.fromAwsManagedPolicyName("AWSCloudMapFullAccess"),
       ])
     )
-    .version(eks.KubernetesVersion.V1_29)
+    .version(eks.KubernetesVersion.V1_30)
     .account(account)
     // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
     .region(region)
     // .enableControlPlaneLogTypes(this.node.tryGetContext('control-plane-log-types'))
     .addOns(
       new blueprints.addons.AwsLoadBalancerControllerAddOn(),
-      new blueprints.addons.KarpenterAddOn({
-        version: 'v0.31.0'
-      }),
+      new blueprints.addons.KarpenterAddOn(),
       // new blueprints.addons.ExternalDnsAddOn({
       //   hostedZoneResources: [],
       // })
