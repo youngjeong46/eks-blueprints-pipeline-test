@@ -38,14 +38,7 @@ export default class PipelineConstruct extends Construct{
 
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
-    .resourceProvider("dev-prod-node-role", new blueprints.CreateRoleProvider("dev-prod-cluster-node-role", new iam.ServicePrincipal("ec2.amazonaws.com"),
-      [
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AWSCloudMapFullAccess"),
-      ])
-    )
+    .resourceProvider("dev-prod-node-role", new blueprints.LookupRoleProvider("eks-cluster-cloudmap-full-node-role"))
     .version(eks.KubernetesVersion.V1_30)
     .account(account)
     // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
