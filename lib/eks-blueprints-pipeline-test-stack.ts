@@ -93,11 +93,11 @@ export default class PipelineConstruct extends Construct{
         stages: [
           { id: "dev", stackBuilder: blueprint.clone('us-east-1')
             .clusterProvider(devClusterProvider)
-            // .addOns(devBootstrapArgo)
+            .addOns(devBootstrapArgo)
           },
           { id: "prod", stackBuilder: blueprint.clone('us-west-2')
             .clusterProvider(devClusterProvider)
-            // .addOns(prodBootstrapArgo)
+            .addOns(prodBootstrapArgo)
           },
         ]
       })
