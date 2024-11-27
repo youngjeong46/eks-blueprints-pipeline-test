@@ -25,11 +25,11 @@ export default class PipelineConstruct extends Construct{
     // const prodDomain = blueprints.utils.valueFromContext(this, 'prod-domain','prod.example.com')
 
     const devClusterProvider = new blueprints.MngClusterProvider({
-      id: "prod-nodegroup-1",
+      id: "dev-prod-nodegroup-1",
       amiType: eks.NodegroupAmiType.AL2_X86_64,
       instanceTypes: [new ec2.InstanceType('m5.2xlarge')],
       nodeGroupCapacityType: eks.CapacityType.ON_DEMAND,
-      version: eks.KubernetesVersion.V1_28,
+      version: eks.KubernetesVersion.V1_29,
       nodeRole: blueprints.getNamedResource("dev-prod-node-role") as iam.Role,
       minSize: 1,
       maxSize: 2,
