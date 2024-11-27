@@ -102,7 +102,7 @@ export default class PipelineConstruct extends Construct{
             .clusterProvider(devClusterProvider)
             .addOns(devBootstrapArgo)
           },
-          { id: "prod", stackBuilder: blueprint.clone('eu-west-1')
+          { id: "prod", stackBuilder: blueprint.clone('us-west-2')
             .clusterProvider(devClusterProvider)
             .addOns(prodBootstrapArgo)
           },
