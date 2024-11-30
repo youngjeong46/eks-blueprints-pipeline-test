@@ -95,6 +95,9 @@ export default class PipelineConstruct extends Construct{
               devBootstrapArgo,
               new blueprints.addons.ExternalDnsAddOn({
                 hostedZoneResources: ["r53-hosted-zone"],
+                values: {
+                  domainFilters: ["r53.youngj.people.aws.dev"]
+                }
               })
             )
           },
