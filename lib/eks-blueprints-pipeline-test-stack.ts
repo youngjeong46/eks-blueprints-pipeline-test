@@ -39,6 +39,7 @@ export default class PipelineConstruct extends Construct{
     // Blueprint definition
     const blueprint = blueprints.EksBlueprint.builder()
     .resourceProvider("dev-prod-node-role", new blueprints.LookupRoleProvider("eks-cluster-cloudmap-full-node-role"))
+    .resourceProvider("r53-hosted-zone", new blueprints.LookupHostedZoneProvider("r53.youngj.people.aws.dev"))
     .version(eks.KubernetesVersion.V1_30)
     .account(account)
     // .resourceProvider(hostedZoneName, new blueprints.LookupHostedZoneProvider(hostedZoneName))
@@ -47,9 +48,9 @@ export default class PipelineConstruct extends Construct{
     .addOns(
       new blueprints.addons.AwsLoadBalancerControllerAddOn(),
       new blueprints.addons.KarpenterAddOn(),
-      // new blueprints.addons.ExternalDnsAddOn({
-      //   hostedZoneResources: [],
-      // })
+      new blueprints.addons.ExternalDnsAddOn({
+        hostedZoneResources: ["r53-hosted-zone"],
+      })
     )
     .teams(
       new teams.TeamPlatform(account),
