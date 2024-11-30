@@ -48,9 +48,6 @@ export default class PipelineConstruct extends Construct{
     .addOns(
       new blueprints.addons.AwsLoadBalancerControllerAddOn(),
       new blueprints.addons.KarpenterAddOn(),
-      new blueprints.addons.ExternalDnsAddOn({
-        hostedZoneResources: ["r53-hosted-zone"],
-      })
     )
     .teams(
       new teams.TeamPlatform(account),
@@ -94,7 +91,12 @@ export default class PipelineConstruct extends Construct{
         stages: [
           { id: "dev", stackBuilder: blueprint.clone('us-east-1')
             .clusterProvider(devClusterProvider)
-            .addOns(devBootstrapArgo)
+            .addOns(
+              devBootstrapArgo,
+              new blueprints.addons.ExternalDnsAddOn({
+                hostedZoneResources: ["r53-hosted-zone"],
+              })
+            )
           },
           { id: "prod", stackBuilder: blueprint.clone('us-west-2')
             .clusterProvider(devClusterProvider)
